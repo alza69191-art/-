@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft, Search, Menu, X, Bell, UserRound, BriefcaseBusiness,
   Palette, Code2, Megaphone, Video, PenTool, ShoppingBag, Star,
@@ -25,6 +25,8 @@ const services = [
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [marketItems, setMarketItems] = useState<any[]>([]);
+  useEffect(() => { fetch("https://vyra-api-9pxl.onrender.com/api/marketplace/products", { cache: "no-store" }).then(r => r.ok ? r.json() : []).then(data => setMarketItems(Array.isArray(data) ? data : [])).catch(() => setMarketItems([])); }, []);
   return (
     <main>
       <div className="topline"><span>منصة واحدة، فرص بلا حدود</span><span>اكتشف عالم VYRA <ArrowLeft size={13}/></span></div>
@@ -63,8 +65,8 @@ export default function Home() {
       </section>
 
       <section className="section services-section" id="services">
-        <div className="section-heading"><div><span className="section-kicker">اختيارات المجتمع</span><h2>خدمات تستحق <em>الاهتمام.</em></h2><p>ابدأ بخطوة صغيرة نحو نتيجة كبيرة.</p></div><a className="text-link" href="#services">استكشف الخدمات <ArrowLeft size={16}/></a></div>
-        <div className="service-grid">{services.map((s,i)=><article className="service-card" key={s.title}><div className={"service-visual visual-"+s.color}><span className="service-tag">{s.tag}</span><div className="visual-shape"><span>{["VY","<>","▶"][i]}</span></div><span className="visual-index">0{i+1}</span></div><div className="service-body"><div className="seller"><span className={"seller-avatar "+s.color}>{s.initials}</span><span>{s.seller}</span><span className="verified">✓</span></div><h3>{s.title}</h3><div className="service-meta"><span><Star size={14} fill="currentColor"/> {s.rating} <small>({s.reviews})</small></span><span>يبدأ من <b>{s.price}$</b></span></div></div></article>)}</div>
+        <div className="section-heading"><div><span className="section-kicker">كتالوج VYRA المباشر</span><h2>منتجات وخدمات <em>المجتمع.</em></h2><p>عناصر حقيقية تُدار وتنشر من لوحة الإدارة.</p></div><a className="text-link" href="#services">استكشف الخدمات <ArrowLeft size={16}/></a></div>
+        <div className="service-grid">{marketItems.length ? marketItems.slice(0,6).map((item:any)=><article className="service-card" key={item.id}><div className="service-visual visual-orange" style={item.image_url?{backgroundImage:`url(${item.image_url})`,backgroundSize:"cover",backgroundPosition:"center"}:{}}><span className="service-tag">{item.item_type==="service"?"خدمة":"منتج"}</span>{!item.image_url&&<div className="visual-shape"><span>V</span></div>}</div><div className="service-body"><div className="seller"><span className="seller-avatar orange">V</span><span>{item.category}</span><span className="verified">✓</span></div><h3>{item.title}</h3><div className="service-meta"><span>{item.payment_methods?.map((p:string)=>p==="paypal"?"PayPal":p==="payoneer"?"Payoneer":p==="manual_transfer"?"تحويل بنكي":p).join(" • ")}</span><span><b>{item.price} {item.currency}</b></span></div></div></article>) : <div className="empty-market">لا توجد منتجات منشورة حالياً. أضف أول منتج أو خدمة من لوحة الإدارة.</div>}</div>
       </section>
 
       <section className="project-banner" id="projects"><div><span className="section-kicker">لديك فكرة؟</span><h2>حوّل مشروعك إلى <em>إنجاز.</em></h2><p>انشر تفاصيل مشروعك واستقبل عروضاً من مستقلين محترفين.</p><button>انشر مشروعك الآن <ArrowLeft size={16}/></button></div><div className="banner-graphic"><div className="banner-ring"/><div className="banner-icon"><BriefcaseBusiness size={42}/></div><span className="banner-pill">فرصتك تبدأ هنا ↗</span></div></section>
